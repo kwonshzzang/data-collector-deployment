@@ -1,0 +1,98 @@
+---
+apiVersion: apps/v1                     # 배포 객체에 대한 API 버전
+kind: Deployment                        # 생성할 객체의 유형
+metadata:
+  name: weather-observation-service     # 배포의 이름
+  labels:                               # 배포에 추가할 레이븍의 집합
+    app: weather-observation-service    # 이 배포는 "app=weather-observation-service" 라는 레이블을 갖는다.
+spec:
+  selector:                             # 확장할 파드를 선택하기 위해 사용할 레이블을 정의한다.
+    matchLabels:
+      app: weather-observation-service
+  template:                             # 파드 생성을 위한 템플릿
+    metadata:
+      labels:                           # 파드 객체에 추가되는 레이블
+                                        # 레이블은 셀렉터로 사용도는 것과 일치해야 한다.
+        app: weather-observation-service
+    spec:
+      containers:                                # 파드내 컨테이너의 목록
+        - name: weather-observation-collector    # 파드 이름
+          image: weather-observation-collector   # 컨테이너를 실행하기 위해 사용할 이미지
+          # 태그를 정의하지 않으면 latest가 암묵적으로 사용됨
+          imagePullPolicy: IfNotPresent          # 이미지가 로컬에 없는 경우에만 컨테이너 저장소에서
+          # 이미지를 다운로드받을 것을 쿠버네티스에게 지시한다.
+          ports:
+            - containerPort: 29001               # 컨테이너에 의해 노출되는 포트
+          env:                                   # 파드로 전달되는 환경변수 목록
+            - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
+              value: broker:29092
+            - name: SPRING_KAFKA_SCHEMA-REGISTRY-URL
+              value: http://schema-registry:8081
+            - name: SPRING_KAFKA_TEMPLATE_DEFAULT-TOPIC
+              value: sensor-data
+
+---
+apiVersion: apps/v1                     # 배포 객체에 대한 API 버전
+kind: Deployment                        # 생성할 객체의 유형
+metadata:
+  name: weather-prediction-service      # 배포의 이름
+  labels:                               # 배포에 추가할 레이븍의 집합
+    app: weather-prediction-service     # 이 배포는 "app=weather-prediction-service" 라는 레이블을 갖는다.
+spec:
+  selector:                             # 확장할 파드를 선택하기 위해 사용할 레이블을 정의한다.
+    matchLabels:
+      app: weather-prediction-service
+  template:                             # 파드 생성을 위한 템플릿
+    metadata:
+      labels:                           # 파드 객체에 추가되는 레이블
+        # 레이블은 셀렉터로 사용도는 것과 일치해야 한다.
+        app: weather-prediction-service
+    spec:
+      containers:                                # 파드내 컨테이너의 목록
+        - name: weather-prediction-collector     # 파드 이름
+          image: weather-prediction-collector    # 컨테이너를 실행하기 위해 사용할 이미지
+          # 태그를 정의하지 않으면 latest가 암묵적으로 사용됨
+          imagePullPolicy: IfNotPresent          # 이미지가 로컬에 없는 경우에만 컨테이너 저장소에서
+          # 이미지를 다운로드받을 것을 쿠버네티스에게 지시한다.
+          ports:
+            - containerPort: 29002               # 컨테이너에 의해 노출되는 포트
+          env:                                   # 파드로 전달되는 환경변수 목록
+            - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
+              value: broker:29092
+            - name: SPRING_KAFKA_SCHEMA-REGISTRY-URL
+              value: http://schema-registry:8081
+            - name: SPRING_KAFKA_TEMPLATE_DEFAULT-TOPIC
+              value: weather-prediction
+
+---
+apiVersion: apps/v1                     # 배포 객체에 대한 API 버전
+kind: Deployment                        # 생성할 객체의 유형
+metadata:
+  name: sensor-data-service             # 배포의 이름
+  labels:                               # 배포에 추가할 레이븍의 집합
+    app: sensor-data-service            # 이 배포는 "app=sensor-data-service" 라는 레이블을 갖는다.
+spec:
+  selector:                             # 확장할 파드를 선택하기 위해 사용할 레이블을 정의한다.
+    matchLabels:
+      app: sensor-data-service
+  template:                             # 파드 생성을 위한 템플릿
+    metadata:
+      labels:                           # 파드 객체에 추가되는 레이블
+                                        # 레이블은 셀렉터로 사용도는 것과 일치해야 한다.
+        app: sensor-data-service
+    spec:
+      containers:                                # 파드내 컨테이너의 목록
+        - name: sensor-data-collector            # 파드 이름
+          image: sensor-data-collector           # 컨테이너를 실행하기 위해 사용할 이미지
+                                                 # 태그를 정의하지 않으면 latest가 암묵적으로 사용됨
+          imagePullPolicy: IfNotPresent          # 이미지가 로컬에 없는 경우에만 컨테이너 저장소에서
+                                                 # 이미지를 다운로드받을 것을 쿠버네티스에게 지시한다.
+          ports:
+            - containerPort: 29003               # 컨테이너에 의해 노출되는 포트
+          env:                                   # 파드로 전달되는 환경변수 목록
+            - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
+              value: broker:29092
+            - name: SPRING_KAFKA_SCHEMA-REGISTRY-URL
+              value: http://schema-registry:8081
+            - name: SPRING_KAFKA_TEMPLATE_DEFAULT-TOPIC
+              value: sensor-data

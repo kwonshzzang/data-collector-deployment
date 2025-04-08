@@ -6,7 +6,7 @@ services:
     hostname: weather-observation-collector
     container_name: weather-observation-collector
     ports:
-      - "29091:29091"
+      - "29001:29001"
     environment:
       SPRING_KAFKA_BOOTSTRAP-SERVERS: broker:29092
       SPRING_KAFKA_SCHEMA-REGISTRY-URL: http://schema-registry:8081
@@ -17,7 +17,7 @@ services:
     hostname: weather-prediction-collector
     container_name: weather-prediction-collector
     ports:
-      - "29092:29092"
+      - "29002:29002"
     environment:
       SPRING_KAFKA_BOOTSTRAP-SERVERS: broker:29092
       SPRING_KAFKA_SCHEMA-REGISTRY-URL: http://schema-registry:8081
@@ -28,7 +28,7 @@ services:
     hostname: sensor-data-collector
     container_name: sensor-data-collector
     ports:
-      - "29093:29093"
+      - "29003:29003"
     environment:
       SPRING_KAFKA_BOOTSTRAP-SERVERS: broker:29092
       SPRING_KAFKA_SCHEMA-REGISTRY-URL: http://schema-registry:8081
